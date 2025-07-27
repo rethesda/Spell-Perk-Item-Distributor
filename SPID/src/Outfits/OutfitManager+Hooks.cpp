@@ -107,7 +107,6 @@ namespace Outfits
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
-
 	/// This hook is used to clear outfit replacements info since the actor will be completely reset,
 	/// thus eligible for a fresh distribution.
 	struct ResetReference
@@ -178,7 +177,7 @@ namespace Outfits
 	};
 
 	// NEXT: These will be disabled for now, but in the future we might want to use these hooks to handle equip/unequip as events and triggers for some actions.
-	// For future reference, there is a situation when the game repeatedly calls (spams) Equip/Unequip calls 
+	// For future reference, there is a situation when the game repeatedly calls (spams) Equip/Unequip calls
 	// during a scripted scene where NPC practices archery (an arrow is being equipped/unequipped), causing some lagging.
 
 	//struct EquipObject
@@ -226,7 +225,7 @@ namespace Outfits
 	/// This hook ensures that items from distributed outfit are not accessible in the inventory.
 	struct FilterInventoryItems
 	{
-		static inline constexpr REL::ID     relocation = RELOCATION_ID(0, 51144); // FINISH: SE addresses
+		static inline constexpr REL::ID     relocation = RELOCATION_ID(0, 51144);  // FINISH: SE addresses
 		static inline constexpr std::size_t offset = OFFSET(0x0, 0xE2);
 
 		static void thunk(RE::ItemList* itemList, RE::InventoryChanges* invChanges, RE::NiPointer<RE::TESObjectREFR>& container)
