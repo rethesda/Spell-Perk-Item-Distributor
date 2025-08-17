@@ -13,9 +13,9 @@ namespace Outfits
 			}
 			if (const auto entryList = invChanges->entryList) {
 				const auto formID = outfit->GetFormID();
-				for (const auto& entryData : *entryList) {
+				for (const auto entryData : *entryList) {
 					if (entryData && entryData->object && entryData->extraLists) {
-						for (const auto& extraList : *entryData->extraLists) {
+						for (const auto extraList : *entryData->extraLists) {
 							auto outfitItem = extraList ? extraList->GetByType<RE::ExtraOutfitItem>() : nullptr;
 							if (outfitItem && outfitItem->id == formID) {
 								// forceEquip - actually it corresponds to the "PreventRemoval" flag in the game's function,
@@ -43,9 +43,9 @@ namespace Outfits
 		std::map<RE::BGSOutfit*, std::vector<std::pair<RE::TESForm*, bool>>> items;
 		if (const auto invChanges = actor->GetInventoryChanges()) {
 			if (const auto entryList = invChanges->entryList) {
-				for (const auto& entryData : *entryList) {
+				for (const auto entryData : *entryList) {
 					if (entryData && entryData->object && entryData->extraLists) {
-						for (const auto& extraList : *entryData->extraLists) {
+						for (const auto extraList : *entryData->extraLists) {
 							auto outfitItem = extraList ? extraList->GetByType<RE::ExtraOutfitItem>() : nullptr;
 							if (outfitItem) {
 								auto isWorn = extraList ? extraList->GetByType<RE::ExtraWorn>() : nullptr;
