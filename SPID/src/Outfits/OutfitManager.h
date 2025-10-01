@@ -185,15 +185,6 @@ namespace Outfits
 		/// Utility method that validates incoming outfit and uses it to resolve pending outfit.
 		bool SetOutfit(const NPCData&, RE::BGSOutfit*, bool isDeathOutfit, bool isFinalOutfit);
 
-		/// Lock for processedActors.
-		mutable Lock _processedLock;
-		/// Lock for wornReplacements.
-		mutable Lock _wornLock;
-		/// Lock for pendingReplacements.
-		mutable Lock _pendingLock;
-		/// Lock for initialOutfits.
-		mutable Lock _initialLock;
-
 		std::unordered_set<RE::FormID> processedActors;
 
 		/// Map of Actor's FormID and corresponding Outfit Replacements that are being tracked by the manager.

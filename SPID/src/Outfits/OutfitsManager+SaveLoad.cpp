@@ -255,8 +255,6 @@ namespace Outfits
 	{
 		auto manager = Manager::GetSingleton();
 
-		WriteLocker wornLock(manager->_wornLock);
-		WriteLocker pendingLock(manager->_pendingLock);
 		LOG_HEADER("REVERTING");
 		// We want to preserve current session's
 		auto& pendingReplacements = manager->pendingReplacements;
@@ -285,9 +283,6 @@ namespace Outfits
 		//#endif
 
 		auto manager = Manager::GetSingleton();
-
-		WriteLocker wornLock(manager->_wornLock);
-		WriteLocker pendingLock(manager->_pendingLock);
 
 		std::uint32_t type, version, length;
 		int           total = 0;

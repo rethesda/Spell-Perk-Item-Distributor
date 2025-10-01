@@ -207,7 +207,6 @@ namespace Outfits
 	RE::BGSOutfit* Manager::GetInitialOutfit(const RE::Actor* actor) const
 	{
 		if (const auto npc = actor->GetActorBase(); npc) {
-			ReadLocker lock(_initialLock);
 			if (const auto it = initialOutfits.find(npc->formID); it != initialOutfits.end()) {
 				return it->second;
 			}
@@ -217,7 +216,6 @@ namespace Outfits
 
 	std::optional<Manager::OutfitReplacement> Manager::GetWornOutfit(const RE::Actor* actor) const
 	{
-		ReadLocker lock(_wornLock);
 		if (const auto it = wornReplacements.find(actor->formID); it != wornReplacements.end()) {
 			return it->second;
 		}
@@ -226,7 +224,6 @@ namespace Outfits
 
 	bool Manager::UpdateWornOutfit(const RE::Actor* actor, std::function<void(OutfitReplacement&)> mutate)
 	{
-		WriteLocker lock(_wornLock);
 		if (const auto it = wornReplacements.find(actor->formID); it != wornReplacements.end()) {
 			auto& replacement = it->second;
 			mutate(replacement);
@@ -237,7 +234,6 @@ namespace Outfits
 
 	std::optional<Manager::OutfitReplacement> Manager::PopWornOutfit(const RE::Actor* actor)
 	{
-		WriteLocker lock(_wornLock);
 		if (const auto it = wornReplacements.find(actor->formID); it != wornReplacements.end()) {
 			auto replacement = it->second;
 			wornReplacements.erase(it);
@@ -248,13 +244,11 @@ namespace Outfits
 
 	Manager::OutfitReplacementMap Manager::GetWornOutfits() const
 	{
-		ReadLocker lock(_wornLock);
 		return wornReplacements;
 	}
 
 	std::optional<Manager::OutfitReplacement> Manager::GetPendingOutfit(const RE::Actor* actor) const
 	{
-		ReadLocker lock(_pendingLock);
 		if (const auto it = pendingReplacements.find(actor->formID); it != pendingReplacements.end()) {
 			return it->second;
 		}
@@ -263,13 +257,11 @@ namespace Outfits
 
 	bool Manager::HasPendingOutfit(const RE::Actor* actor) const
 	{
-		ReadLocker lock(_pendingLock);
 		return pendingReplacements.find(actor->formID) != pendingReplacements.end();
 	}
 
 	bool Manager::HasWornOutfit(const RE::Actor* actor) const
 	{
-		ReadLocker lock(_wornLock);
 		return wornReplacements.find(actor->formID) != wornReplacements.end();
 	}
 
@@ -280,13 +272,11 @@ namespace Outfits
 
 	bool Manager::IsProcessed(RE::FormID actorID) const
 	{
-		ReadLocker lock(_processedLock);
 		return processedActors.contains(actorID);
 	}
 
 	void Manager::MarkProcessed(const RE::Actor* actor)
 	{
-		WriteLocker lock(_processedLock);
 		processedActors.insert(actor->formID);
 	}
 
@@ -304,18 +294,9 @@ namespace Outfits
 	RE::BSEventNotifyControl Manager::ProcessEvent(const RE::TESFormDeleteEvent* event, RE::BSTEventSource<RE::TESFormDeleteEvent>*)
 	{
 		if (event && event->formID != 0) {
-			{
-				WriteLocker lock(_wornLock);
-				wornReplacements.erase(event->formID);
-			}
-			{
-				WriteLocker lock(_pendingLock);
-				pendingReplacements.erase(event->formID);
-			}
-			{
-				WriteLocker lock(_initialLock);
-				initialOutfits.erase(event->formID);
-			}
+			wornReplacements.erase(event->formID);
+			pendingReplacements.erase(event->formID);
+			initialOutfits.erase(event->formID);
 		}
 		return RE::BSEventNotifyControl::kContinue;
 	}

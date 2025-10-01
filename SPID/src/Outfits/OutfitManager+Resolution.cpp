@@ -4,8 +4,6 @@ namespace Outfits
 {
 	std::optional<Manager::OutfitReplacement> Manager::ResolveWornOutfit(RE::Actor* actor, bool isDying)
 	{
-		WriteLocker pendingLock(_pendingLock);
-		WriteLocker wornLock(_wornLock);
 		if (auto pending = pendingReplacements.find(actor->formID); pending != pendingReplacements.end()) {
 			return ResolveWornOutfit(actor, pending, isDying);
 		}
@@ -97,7 +95,6 @@ namespace Outfits
 		assert(!isDeathOutfit || isDying || isDead);  // If outfit is death outfit then actor must be dying or dead, otherwise there is a mistake in the code.
 		assert(!isDying || isDeathOutfit);            // If actor is dying then outfit must be from On Death Distribution, otherwise there is a mistake in the code.
 
-		WriteLocker lock(_pendingLock);
 		if (const auto pending = pendingReplacements.find(actor->formID); pending != pendingReplacements.end()) {
 			auto& G = pending->second;  // Named according to the Resolution Table, outfit corresponds to L from that table.
 			// Null outfit in this case means that additional distribution didn't pick new outfit.

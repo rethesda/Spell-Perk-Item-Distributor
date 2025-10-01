@@ -10,7 +10,6 @@ namespace Outfits
 			//#ifndef NDEBUG
 			//			logger::info("{}: {}", *npc, *npc->defaultOutfit);
 			//#endif
-			WriteLocker lock(_initialLock);
 			initialOutfits.try_emplace(npc->formID, npc->defaultOutfit);
 		}
 	}
