@@ -354,6 +354,8 @@ namespace Outfits
 					//#endif
 					manager->ApplyOutfit(actor, resolved->distributed);
 				}
+			} else {
+				pendingReplacements.erase(it++);
 			}
 		}
 		pendingReplacements.clear();  // in case there were corrupted actors we want to clear this list.
