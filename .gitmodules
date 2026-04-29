@@ -4,3 +4,6 @@
 [submodule "extern/CommonLibVR"]
 	path = extern/CommonLibVR
 	url = https://github.com/alandtse/CommonLibVR
+[submodule "extern/SKSEHooking"]
+	path = extern/SKSEHooking
+	url = https://github.com/adya/SKSEHooking.git

@@ -146,6 +146,7 @@ find_package(unordered_dense CONFIG REQUIRED)
 find_path(SRELL_INCLUDE_DIRS "srell.hpp")
 find_path(MERGEMAPPER_INCLUDE_DIRS "MergeMapperPluginAPI.h")
 find_path(CLIB_UTIL_INCLUDE_DIRS "ClibUtil/utils.hpp")
+set(SKSE_HOOKING_INCLUDE_DIR "../extern/SKSEHooking")
 
 # ---- Auto-discover all source and header files ----
 
@@ -214,6 +215,7 @@ target_include_directories(
         ${SRELL_INCLUDE_DIRS}
         ${MERGEMAPPER_INCLUDE_DIRS}
         ${CLIB_UTIL_INCLUDE_DIRS}
+		${SKSE_HOOKING_INCLUDE_DIR}
 )
 
 target_link_libraries(
