@@ -225,7 +225,7 @@ namespace Testing::Helper
 	{
 		int GetItemCount(RE::Actor* actor, RE::TESBoundObject* item)
 		{
-			int itemsCount = actor->GetActorBase()->CountObjectsInContainer(item);
+			int itemsCount = actor->GetActorBase()->GetObjectCount(item);
 			if (const auto invChanges = actor->GetInventoryChanges()) {
 				if (const auto entryLists = invChanges->entryList) {
 					for (const auto& entryList : *entryLists) {
