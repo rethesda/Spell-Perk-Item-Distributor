@@ -1,14 +1,20 @@
-[size=5][b]SPID: The Complete Reference
-[/b][/size][color=#cccccc][i][size=1]as of SPID 7.2.0[/size]
-[/i][/color][color=#efefef]
-Everything you need to know to start creating SPID mods.[/color]
+[size=5][b]SPID: The Complete Reference[/b][/size]
+[color=#cccccc][i][size=1]as of SPID 7.3.0[/size][/i][/color]
+[color=#efefef]Everything you need to know to start creating SPID mods.[/color]
 
 [size=4][b]Changelog[/b][/size]
 [spoiler]
 [list]
+[*]29.04.26[/*]
+[*]  Updated for SPID 7.3.[/*]
+[*]  Added Deterministic Chance section.[/*]
+[*]  Fixed distribution order: added missing LevSpells and SleepOutfits.[/*]
 [*]09.06.25[/*]
-[*]  Updated for SPID 7.2.
-[/*]
+[*]  Updated for SPID 7.2.[/*]
+[*]  Rewrote "When Distribution happens?" section with lazy loading.[/*]
+[*]  Updated distribution order.[/*]
+[*]  Added [b][color=#ffd966]D[/color][/b]ead ([b]D[/b]) trait to Traits section.[/*]
+[*]  General formatting fixes throughout.[/*]
 [*]17.04.24 [/*]
 [*]  Removed section about special Outfits ordering. The reverse ordering was removed in SPID 6.5.0[/*]
 [/list]
@@ -46,6 +52,7 @@ Everything you need to know to start creating SPID mods.[/color]
 [*]      Package Index[/*]
 [*]      Package List Type[/*]
 [*]  Chance[/*]
+[*]      Deterministic Chance[/*]
 [/list]
 [/spoiler]
 
@@ -547,4 +554,30 @@ If this section is absent Default chance is 100 (e.g. guaranteed).
 
 [color=#cccccc][size=2][i]Give a form with a 0.01% chance[/i][/size][/color]
 [code]Form = 0x12345||||||0.01[/code]
+[/spoiler]
+
+[b][size=3][color=#b6d7a8]Deterministic Chance[/color][/size][/b]
+
+By default, the chance roll is made randomly each time an NPC is processed. This means the same NPC can and will get different results every time players restart the game.
+
+If you want to make your distribution consistent in the same savegame (Player character) you can convert the chance to [b]deterministic[/b] by appending [b]![/b] to the chance value (e.g. 50!).
+Deterministic chance rolls the same results for the same Actor (NPC) and the same savegame (Player character) across all game sessions.
+
+[color=#b6d7a8][b]What affects the deterministic chance outcome:[/b][/color]
+
+[list]
+[*][b]Actor/NPC that is being targeted.[/b] Each NPC in the world will have different results.[/*]
+[*][b]Player character.[/b] Starting a new game, or loading between different characters will produce different results.[/*]
+[*][b]The source entry.[/b] Adding/changing filters, changing chance, etc. will change the results.[/*]
+[/list]
+
+[color=#cccccc][size=1]Example:[/size][/color]
+[spoiler][color=#cccccc][size=2][i]Give a form with a deterministic 50% chance. Each NPC will either always or never receive this form, consistently across all game sessions for the same Player character.[/i][/size][/color]
+[code]Form = 0x12345||||||50![/code]
+
+[color=#cccccc][size=2][i]Even slightest change in the line will produce different random rolls, so the distribution will look differently.[/i][/size][/color]
+[code]Form = 0x12345|NONE|||||50![/code]
+
+[color=#cccccc][size=2][i]Decimal values work just like regular chances.[/i][/size][/color]
+[code]Form = 0x12345||||||33.3![/code]
 [/spoiler]
