@@ -9,6 +9,7 @@ namespace FormType
 		RE::FormType::Race,
 		RE::FormType::Outfit,
 		RE::FormType::NPC,
+		RE::FormType::ActorCharacter,
 		RE::FormType::VoiceType,
 		RE::FormType::FormList,
 		RE::FormType::Spell,

@@ -137,6 +137,8 @@ namespace NPC
 			return Outfits::Manager::GetSingleton()->HasDefaultOutfit(npc, a_form->As<RE::BGSOutfit>());
 		case RE::FormType::NPC:
 			return npc == a_form || std::ranges::any_of(IDs, [&](const auto& ID) { return ID == a_form->GetFormID(); });
+		case RE::FormType::ActorCharacter:
+			return actor->GetFormID() == a_form->GetFormID();
 		case RE::FormType::VoiceType:
 			return npc->voiceType == a_form;
 		case RE::FormType::Spell:
