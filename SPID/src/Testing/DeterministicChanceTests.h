@@ -115,9 +115,9 @@ namespace DeterministicChance
 			}
 		}
 
-		namespace Filters
+		namespace DeterministicFilters
 		{
-			constexpr static const char* moduleName = "DeterministicChance.Filters";
+			constexpr static const char* moduleName = "DeterministicChance.Filters.Deterministic";
 
 			TEST(SameCallGivesSameResult)
 			{
@@ -133,13 +133,15 @@ namespace DeterministicChance
 				auto expected = filterData.PassedFilters(npcData);
 				for (int i = 1; i < N; ++i) {
 					auto result = filterData.PassedFilters(npcData);
-					ASSERT(result == expected, fmt::format("Expected deterministic chance to give the same result on call {}/{}", i + 1, N));
+					ASSERT(result == expected, fmt::format("Expected deterministic 50% chance to give the same result on call {}/{}", i + 1, N));
 				}
 				PASS;
 			}
 
 			TEST(ZeroChanceAlwaysFails)
 			{
+				constexpr int N = 10;
+
 				auto    actor = ::Testing::Helper::Actor::GetActor();
 				NPCData npcData(actor);
 
@@ -147,47 +149,145 @@ namespace DeterministicChance
 				zeroChance.lineSeed = std::hash<std::string>{}("Spell = 0x10F7F7||||||0!");
 				::FilterData filterData{ {}, {}, {}, {}, zeroChance };
 
-				auto result = filterData.PassedFilters(npcData);
-				EXPECT(result == Filter::Result::kFailRNG, "Expected 0% chance to always fail RNG check");
+				for (int i = 0; i < N; ++i) {
+					auto result = filterData.PassedFilters(npcData);
+					ASSERT(result == Filter::Result::kFailRNG, fmt::format("Expected 0% chance to fail RNG on call {}/{}", i + 1, N));
+				}
+				PASS;
 			}
 
 			TEST(FullChanceAlwaysPasses)
 			{
+				constexpr int N = 10;
+
 				auto    actor = ::Testing::Helper::Actor::GetActor();
 				NPCData npcData(actor);
 
 				::FilterData filterData{ {}, {}, {}, {}, Chance(1.0, true) };
 
-				auto result = filterData.PassedFilters(npcData);
-				EXPECT(result == Filter::Result::kPass, "Expected 100% chance to pass all filters");
+				for (int i = 0; i < N; ++i) {
+					auto result = filterData.PassedFilters(npcData);
+					ASSERT(result == Filter::Result::kPass, fmt::format("Expected 100% chance to pass on call {}/{}", i + 1, N));
+				}
+				PASS;
 			}
 
-			TEST(DifferentActorsHaveIndependentResults)
+			TEST(LowChanceIsStable)
 			{
 				constexpr int N = 10;
 
-				auto    actor1 = ::Testing::Helper::Actor::GetActor();
-				auto    actor2 = ::Testing::Helper::Actor::GetAnotherActor();
-				NPCData npcData1(actor1);
-				NPCData npcData2(actor2);
+				auto    actor = ::Testing::Helper::Actor::GetActor();
+				NPCData npcData(actor);
 
-				Chance deterministicChance(0.5, true);
-				deterministicChance.lineSeed = std::hash<std::string>{}("Spell = 0x10F7F7||||||50!");
-				::FilterData filterData{ {}, {}, {}, {}, deterministicChance };
+				Chance lowChance(0.1, true);
+				lowChance.lineSeed = std::hash<std::string>{}("Spell = 0x10F7F7||||||10!");
+				::FilterData filterData{ {}, {}, {}, {}, lowChance };
 
-				// Each actor's result must be stable across N repeated calls, even if they differ from each other
-				auto expected1 = filterData.PassedFilters(npcData1);
+				auto expected = filterData.PassedFilters(npcData);
 				for (int i = 1; i < N; ++i) {
-					auto result = filterData.PassedFilters(npcData1);
-					ASSERT(result == expected1, fmt::format("Expected actor1 to get the same result on call {}/{}", i + 1, N));
+					auto result = filterData.PassedFilters(npcData);
+					ASSERT(result == expected, fmt::format("Expected 10% chance to give the same result on call {}/{}", i + 1, N));
 				}
+				PASS;
+			}
 
-				auto expected2 = filterData.PassedFilters(npcData2);
+			TEST(HighChanceIsStable)
+			{
+				constexpr int N = 10;
+
+				auto    actor = ::Testing::Helper::Actor::GetActor();
+				NPCData npcData(actor);
+
+				Chance highChance(0.9, true);
+				highChance.lineSeed = std::hash<std::string>{}("Spell = 0x10F7F7||||||90!");
+				::FilterData filterData{ {}, {}, {}, {}, highChance };
+
+				auto expected = filterData.PassedFilters(npcData);
 				for (int i = 1; i < N; ++i) {
-					auto result = filterData.PassedFilters(npcData2);
-					ASSERT(result == expected2, fmt::format("Expected actor2 to get the same result on call {}/{}", i + 1, N));
+					auto result = filterData.PassedFilters(npcData);
+					ASSERT(result == expected, fmt::format("Expected 90% chance to give the same result on call {}/{}", i + 1, N));
 				}
+				PASS;
+			}
+		}
 
+		namespace NonDeterministicFilters
+		{
+			constexpr static const char* moduleName = "DeterministicChance.Filters.NonDeterministic";
+
+			TEST(ProducesVariation)
+			{
+				constexpr int N = 10;
+
+				auto    actor = ::Testing::Helper::Actor::GetActor();
+				NPCData npcData(actor);
+
+				// 50% gives the lowest probability of all-same across 10 calls (~0.2%),
+				// minimizing flake risk while still asserting that a true RNG path is in use.
+				::FilterData filterData{ {}, {}, {}, {}, Chance(0.5, false) };
+
+				auto first = filterData.PassedFilters(npcData);
+				bool sawDifferent = false;
+				for (int i = 1; i < N; ++i) {
+					if (filterData.PassedFilters(npcData) != first) {
+						sawDifferent = true;
+					}
+				}
+				EXPECT(sawDifferent, "Expected 50% chance to produce different results across 10 calls");
+			}
+
+			TEST(IgnoresLineSeed)
+			{
+				constexpr int N = 10;
+
+				auto    actor = ::Testing::Helper::Actor::GetActor();
+				NPCData npcData(actor);
+
+				// lineSeed should be unused when deterministic is false; results must still vary.
+				Chance nonDeterministicChance(0.5, false);
+				nonDeterministicChance.lineSeed = std::hash<std::string>{}("Spell = 0x10F7F7||||||50");
+				::FilterData filterData{ {}, {}, {}, {}, nonDeterministicChance };
+
+				auto first = filterData.PassedFilters(npcData);
+				bool sawDifferent = false;
+				for (int i = 1; i < N; ++i) {
+					if (filterData.PassedFilters(npcData) != first) {
+						sawDifferent = true;
+					}
+				}
+				EXPECT(sawDifferent, "Expected results to vary regardless of lineSeed");
+			}
+
+			TEST(ZeroChanceAlwaysFails)
+			{
+				constexpr int N = 10;
+
+				auto    actor = ::Testing::Helper::Actor::GetActor();
+				NPCData npcData(actor);
+
+				::FilterData filterData{ {}, {}, {}, {}, Chance(0.0, false) };
+
+				for (int i = 0; i < N; ++i) {
+					auto result = filterData.PassedFilters(npcData);
+					ASSERT(result == Filter::Result::kFailRNG, fmt::format("Expected 0% chance to fail RNG on call {}/{}", i + 1, N));
+				}
+				PASS;
+			}
+
+			TEST(FullChanceAlwaysPasses)
+			{
+				constexpr int N = 10;
+
+				auto    actor = ::Testing::Helper::Actor::GetActor();
+				NPCData npcData(actor);
+
+				// 100% chance bypasses RNG entirely (chance.value < 1 short-circuits).
+				::FilterData filterData{ {}, {}, {}, {}, Chance(1.0, false) };
+
+				for (int i = 0; i < N; ++i) {
+					auto result = filterData.PassedFilters(npcData);
+					ASSERT(result == Filter::Result::kPass, fmt::format("Expected 100% chance to pass on call {}/{}", i + 1, N));
+				}
 				PASS;
 			}
 		}
