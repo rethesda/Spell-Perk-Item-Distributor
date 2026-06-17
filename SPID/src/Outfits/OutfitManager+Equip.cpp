@@ -51,11 +51,23 @@ namespace Outfits
 	//	return RE::BSEventNotifyControl::kContinue;
 	//}
 
-	RE::NiAVObject* Manager::ProcessLoad3D(RE::Actor* actor, std::function<RE::NiAVObject*()> funcCall)
+	RE::NiAVObject* Manager::ProcessLoad3D(RE::Actor* actor, bool isBackgroundLoading, std::function<RE::NiAVObject*()> funcCall)
 	{
 		if (!isLoadingGame) {
-			if (const auto outfit = ResolveWornOutfit(actor, false); outfit) {
-				ApplyOutfit(actor, outfit->distributed);
+			if (isBackgroundLoading) {
+				const auto handle = actor->GetHandle();
+				SKSE::GetTaskInterface()->AddTask([handle]() {
+					if (const auto actorPtr = handle.get()) {
+						const auto manager = GetSingleton();
+						if (const auto outfit = manager->ResolveWornOutfit(actorPtr.get(), false); outfit) {
+							manager->ApplyOutfit(actorPtr.get(), outfit->distributed, true);
+						}
+					}
+				});
+			} else {
+				if (const auto outfit = ResolveWornOutfit(actor, false); outfit) {
+					ApplyOutfit(actor, outfit->distributed);
+				}
 			}
 		}
 

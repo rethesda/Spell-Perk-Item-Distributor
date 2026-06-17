@@ -223,7 +223,7 @@ namespace Outfits
 		void InitializeHooks();
 
 		HOOK_HANDLER(bool, ShouldBackgroundClone, RE::Character*)
-		HOOK_HANDLER(RE::NiAVObject*, Load3D, RE::Actor*)
+		HOOK_HANDLER(RE::NiAVObject*, Load3D, RE::Actor*, bool isBackgroundLoading)
 
 		HOOK_HANDLER(void, InitItemImpl, RE::TESNPC*)
 

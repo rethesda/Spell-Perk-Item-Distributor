@@ -34,7 +34,7 @@ namespace Outfits
 		static RE::NiAVObject* thunk(RE::Character* actor, bool a_backgroundLoading)
 		{
 			//logger::info("Load3D ({}); Background: {}", *(actor->As<RE::Actor>()), a_backgroundLoading);
-			return Manager::GetSingleton()->ProcessLoad3D(actor, [&] { return func(actor, a_backgroundLoading); });
+			return Manager::GetSingleton()->ProcessLoad3D(actor, a_backgroundLoading, [&] { return func(actor, a_backgroundLoading); });
 		}
 
 		static inline void post_hook()
