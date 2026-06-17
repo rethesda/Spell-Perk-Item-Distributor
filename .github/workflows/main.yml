@@ -16,11 +16,15 @@ jobs:
     uses: adya/pack-skse-mod/.github/workflows/pack.yml@main
     with:
       CMAKE_PROJECT_DIR: "SPID"
+      CMAKE_SE_CONFIG_PRESET: 'vs2026-windows-vcpkg-se'
+      CMAKE_SE_BUILD_PRESET: ''
+      CMAKE_AE_CONFIG_PRESET: 'vs2026-windows-vcpkg-ae'
+      CMAKE_AE_BUILD_PRESET: ''
       CMAKE_VR_CONFIG_PRESET: ''
       CMAKE_VR_BUILD_PRESET: ''
       FOMOD_INCLUDE_PDB: true
       FOMOD_MOD_NAME: "Spell Perk Item Distributor"
-      FOMOD_MOD_AUTHOR: "powerofthree"
+      FOMOD_MOD_AUTHOR: "powerofthree & sasnikol"
       FOMOD_MOD_NEXUS_ID: "36869"
       FOMOD_SE_MIN_GAME_VERSION: '1.5'
       FOMOD_AE_MIN_GAME_VERSION: '1.6'
