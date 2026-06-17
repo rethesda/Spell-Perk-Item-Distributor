@@ -21,8 +21,9 @@ namespace Outfits
 								// forceEquip - actually it corresponds to the "PreventRemoval" flag in the game's function,
 								//				which determines whether NPC/EquipItem call can unequip the item. See EquipItem Papyrus function.
 								// What it does in practice is blocks that equip slot from being re-evaluated when UpdateWornGear is called.
-								RE::ActorEquipManager::GetSingleton()->EquipObject(actor, entryData->object, extraList, 1, nullptr, shouldUpdate3D, false, false, true);
+								RE::ActorEquipManager::GetSingleton()->EquipObject(actor, entryData->object, extraList, 1, nullptr, shouldUpdate3D, false, false, false);
 								equipped = true;
+								break;
 							}
 						}
 					}
