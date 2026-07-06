@@ -90,6 +90,22 @@ namespace Distribute
 				}
 			},
 			accumulatedForms);
+		
+		for_first_form<RE::BGSOutfit>(
+			npcData, forms.sleepOutfits, input, [&](auto* a_outfit, bool isFinal) {
+				if (npc->sleepOutfit != a_outfit) {
+					npc->sleepOutfit = a_outfit;
+					return true;
+				}
+				return false;
+			},
+			accumulatedForms);
+
+		for_first_form<RE::BGSOutfit>(
+			npcData, forms.outfits, input, [&](auto* outfit, bool isFinal) {
+				return distributeOutfit(npcData, outfit, isFinal);  // terminate as soon as valid outfit is confirmed.
+			},
+			accumulatedForms);
 
 		for_each_form<RE::TESBoundObject>(
 			npcData, forms.items, input, [&](std::map<RE::TESBoundObject*, Count>& a_objects) {
@@ -111,22 +127,6 @@ namespace Distribute
 					return true;
 				}
 				return false;
-			},
-			accumulatedForms);
-
-		for_first_form<RE::BGSOutfit>(
-			npcData, forms.sleepOutfits, input, [&](auto* a_outfit, bool isFinal) {
-				if (npc->sleepOutfit != a_outfit) {
-					npc->sleepOutfit = a_outfit;
-					return true;
-				}
-				return false;
-			},
-			accumulatedForms);
-
-		for_first_form<RE::BGSOutfit>(
-			npcData, forms.outfits, input, [&](auto* outfit, bool isFinal) {
-				return distributeOutfit(npcData, outfit, isFinal);  // terminate as soon as valid outfit is confirmed.
 			},
 			accumulatedForms);
 	}

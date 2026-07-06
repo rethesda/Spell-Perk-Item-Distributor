@@ -92,9 +92,9 @@ The exact order at which form types are processed is:
 [*]Spells[/*]
 [*]Shouts[/*]
 [*]Packages[/*]
+[*]Outfits[/*]
 [*]Items[/*]
 [*]Skins[/*]
-[*]Outfits[/*]
 [/list]
 [/spoiler]
 Within each type forms are distributed in the same order that they were loaded with an exception:
