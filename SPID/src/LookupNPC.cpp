@@ -147,7 +147,7 @@ namespace NPC
 				return npc->GetSpellList()->GetIndex(spell).has_value();
 			}
 		case RE::FormType::Armor:
-			return npc->skin == a_form;
+			return npc->skin == a_form || has_item_in_inventory(a_form->As<RE::TESBoundObject>());
 		case RE::FormType::Location:
 			{
 				const auto location = a_form->As<RE::BGSLocation>();
@@ -173,8 +173,19 @@ namespace NPC
 				return result;
 			}
 		default:
+			if (const auto item = a_form->As<RE::TESBoundObject>(); item) {
+				return has_item_in_inventory(item);
+			}
 			return false;
 		}
+	}
+
+	bool Data::has_item_in_inventory(RE::TESBoundObject* a_item) const
+	{
+		if (const auto invChanges = actor->GetInventoryChanges()) {
+			return invChanges->GetCount(a_item, [](const RE::InventoryEntryData*) { return true; }) > 0;
+		}
+		return npc->GetObjectCount(a_item) > 0;
 	}
 
 	bool Data::HasFormFilter(const FormVec& a_forms, bool all) const

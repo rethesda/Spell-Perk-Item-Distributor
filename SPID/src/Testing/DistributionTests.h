@@ -50,6 +50,42 @@ namespace Distribute
 				auto got = ::Testing::Helper::Inventory::GetItemCount(actor, item);
 				EXPECT(got == 1, fmt::format("Expected actor to have 1 item, but they have {}", got));
 			}
+
+			TEST(SkipSpellWhenRequiredItemIsNotInInventory)
+			{
+				auto        actor{ ::Testing::Helper::Actor::GetActor() };
+				auto        item{ ::Testing::Helper::Data::GetItem() };
+				auto        spell{ ::Testing::Helper::Data::GetSpell() };
+				FormFilters formFilters{ {}, {}, { item } };
+				FilterData  filterData{ {}, formFilters, {}, {}, 100 };
+				RandomCount idxOrCount{ 1, 1 };
+				bool        isFinal{ false };
+				Path        path{ "" };
+
+				::Testing::Helper::Distribution::GetSpells().EmplaceForm(true, spell, isFinal, idxOrCount, filterData, path);
+				::Testing::Helper::Distribution::Distribute(actor);
+				EXPECT(!actor->HasSpell(spell), "Expected spell to not be distributed when actor doesn't have the required item in their inventory");
+			}
+
+			TEST(AddSpellWhenRequiredItemIsInInventory)
+			{
+				auto        actor{ ::Testing::Helper::Actor::GetActor() };
+				auto        item{ ::Testing::Helper::Data::GetItem() };
+				auto        spell{ ::Testing::Helper::Data::GetSpell() };
+				FormFilters formFilters{ {}, {}, { item } };
+				FilterData  filterData{ {}, formFilters, {}, {}, 100 };
+				RandomCount idxOrCount{ 1, 1 };
+				bool        isFinal{ false };
+				Path        path{ "" };
+
+				actor->GetActorBase()->AddObjectToContainer(item, 1, actor);
+				::Testing::Helper::Distribution::GetSpells().EmplaceForm(true, spell, isFinal, idxOrCount, filterData, path);
+				::Testing::Helper::Distribution::Distribute(actor);
+				bool hasSpell = actor->HasSpell(spell);
+
+				actor->GetActorBase()->RemoveObjectFromContainer(item, 1);
+				EXPECT(hasSpell, "Expected spell to be distributed when actor has the required item in their inventory");
+			}
 		}
 
 		namespace Spells

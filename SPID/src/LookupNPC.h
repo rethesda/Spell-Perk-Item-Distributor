@@ -74,6 +74,7 @@ namespace NPC
 
 		[[nodiscard]] bool has_keyword_string(const std::string& a_string) const;
 		[[nodiscard]] bool has_form(RE::TESForm* a_form) const;
+		[[nodiscard]] bool has_item_in_inventory(RE::TESBoundObject* a_item) const;
 
 		RE::TESNPC*     npc;
 		RE::Actor*      actor;

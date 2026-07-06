@@ -15,7 +15,20 @@ namespace FormType
 		RE::FormType::Spell,
 		RE::FormType::Armor,
 		RE::FormType::Location,
-		RE::FormType::Perk
+		RE::FormType::Perk,
+		// Inventory-checked item types (see NPC::Data::has_item_in_inventory)
+		RE::FormType::Weapon,
+		RE::FormType::Ammo,
+		RE::FormType::Ingredient,
+		RE::FormType::AlchemyItem,
+		RE::FormType::Book,
+		RE::FormType::Misc,
+		RE::FormType::SoulGem,
+		RE::FormType::KeyMaster,
+		RE::FormType::Scroll,
+		RE::FormType::Note,
+		RE::FormType::Apparatus,
+		RE::FormType::Light
 	};
 
 	bool GetWhitelisted(RE::FormType a_type);
