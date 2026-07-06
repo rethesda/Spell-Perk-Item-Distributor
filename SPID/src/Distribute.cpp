@@ -90,7 +90,7 @@ namespace Distribute
 				}
 			},
 			accumulatedForms);
-		
+
 		for_first_form<RE::BGSOutfit>(
 			npcData, forms.sleepOutfits, input, [&](auto* a_outfit, bool isFinal) {
 				if (npc->sleepOutfit != a_outfit) {
